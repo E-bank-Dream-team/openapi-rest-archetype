@@ -53,6 +53,27 @@
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+#if( $dbType == "postgresql" )
+#set( $dbGroupId = "org.postgresql" )
+#set( $dbArtifactId = "postgresql" )
+## uncomment to add more databases
+## #elseif
+## default database is postgresql
+#else
+#set( $dbGroupId = "org.postgresql" )
+#set( $dbArtifactId = "postgresql" )
+#end
+    <dependency>
+      <groupId>$dbGroupId</groupId>
+      <artifactId>$dbArtifactId</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <build>
