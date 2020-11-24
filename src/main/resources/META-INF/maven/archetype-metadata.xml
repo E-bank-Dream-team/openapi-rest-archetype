@@ -19,10 +19,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
-  name="${artifactId}">
-
+<archetype-descriptor xmlns="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0 
+http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="${artifactId}">
   <fileSets>
     <fileSet filtered="true" packaged="true">
       <directory>src/main/java</directory>
@@ -37,6 +35,10 @@ under the License.
   <requiredProperties>
     <requiredProperty key="mainSpringClassName">
       <defaultValue>Application</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="dbType">
+      <validationRegex>^(postgresql)$</validationRegex>
+      <defaultValue>postgresql</defaultValue>
     </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
