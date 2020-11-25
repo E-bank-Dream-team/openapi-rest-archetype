@@ -16,6 +16,7 @@
     <java.version>11</java.version>
     <mockito.version>3.6.0</mockito.version>
     <openapitools-version>4.3.1</openapitools-version>
+    <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
   </properties>
 
   <dependencies>
@@ -87,6 +88,12 @@
       <artifactId>$dbArtifactId</artifactId>
       <scope>runtime</scope>
     </dependency>
+    
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+		<version>${spring-cloud-contract.version}</version>
+	</dependency>
   </dependencies>
 
   <build>
