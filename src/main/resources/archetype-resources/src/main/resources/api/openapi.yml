@@ -1,0 +1,59 @@
+openapi: "3.0.0"
+info:
+    title: Swagger Application
+    description: This is Application server.
+    termsOfService: "http://swagger.io/terms/"
+    contact:
+        email: firstname.lastname@capgemini.com
+    license:
+        name: Apache 2.0
+        url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    version: "1.0.0"
+servers:
+    - url: "{protocol}://{host}:{port}"
+      variables:
+          protocol:
+              enum:
+                  - "http"
+                  - "https"
+              default: "http"
+          port:
+              enum:
+                  - "8080"
+                  - "8443"
+              default: "8080"
+          host:
+              enum:
+                  - "localhost"
+              default: "localhost"
+tags:
+    - name: app
+      description: Informations about application
+paths:
+    "/api":
+        get:
+            tags:
+                - app
+            summary: Get API status
+            operationId: getStatus
+            responses:
+                "200":
+                    description: An API status
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AppStatus"
+                "400":
+                    description: Bad request
+                    content: {}
+                "404":
+                    description: Error
+                    content: {}
+components:
+    schemas:
+        AppStatus:
+            type: object
+            properties:
+                app-version:
+                    type: string
+                    description: https://schema.org/version

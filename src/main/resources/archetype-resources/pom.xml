@@ -15,6 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
     <mockito.version>3.6.0</mockito.version>
+    <openapitools-version>4.3.1</openapitools-version>
   </properties>
 
   <dependencies>
@@ -59,6 +60,18 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>openapi-generator</artifactId>
+      <version>${openapitools-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.1</version>
+    </dependency>
+
 #if( $dbType == "postgresql" )
 #set( $dbGroupId = "org.postgresql" )
 #set( $dbArtifactId = "postgresql" )
@@ -94,6 +107,36 @@
           <!-- To avoid ForkedBooter loading issue -->
           <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapitools-version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorName>spring</generatorName>
+              <inputSpec>${project.basedir}/src/main/resources/api/openapi.yml</inputSpec>
+              <configOptions>
+                <sourceFolder>src/main/java</sourceFolder>
+                <library>spring-boot</library>
+                <dateLibrary>java11</dateLibrary>
+                <java11>true</java11>
+                <interfaceOnly>true</interfaceOnly>
+                <skipDefaultInterface>true</skipDefaultInterface>
+                <useTags>true</useTags>
+              </configOptions>
+              <modelPackage>${package}.generated.dto</modelPackage>
+              <modelNameSuffix>Dto</modelNameSuffix>
+              <apiPackage>${package}.generated.api</apiPackage>
+              <generateSupportingFiles>false</generateSupportingFiles>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
