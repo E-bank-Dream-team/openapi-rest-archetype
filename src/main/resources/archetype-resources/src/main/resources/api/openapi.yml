@@ -29,6 +29,8 @@ servers:
 tags:
     - name: app
       description: Informations about application
+    - name: sample
+      description: Operations about Sample
 paths:
     "/api":
         get:
@@ -49,7 +51,59 @@ paths:
                 "404":
                     description: Error
                     content: {}
+    "/api/v1/samples":
+        get:
+            tags:
+                - sample
+            summary: Get all samples
+            operationId: getSamples
+            responses:
+                "200":
+                    description: successful operation
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Sample"
+                "400":
+                    description: Invalid request format
+                    content: {}
+    "/api/v1/samples/{sampleId}":
+        get:
+            tags:
+                - sample
+            summary: Get samples by sampleId
+            operationId: getSampleById
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: sampleId
+                  in: path
+                  description: 'The id that needs to be fetched. Use "1" for testing. '
+                  required: true
+                  schema:
+                      type: integer
+                      format: int64
+            responses:
+                "200":
+                    description: successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Sample"
+                "400":
+                    $ref: '#/components/responses/IvalidSampleId'
+                "404":
+                    $ref: '#/components/responses/SampleNotFound'
 components:
+    responses:
+        SampleNotFound:
+            description: Sample not found for given ID
+            content: {}
+        IvalidSampleId:
+            description: Invalid sampleId supplied. Must be long type greater than 0.
+            content: {}
     schemas:
         AppStatus:
             type: object
@@ -57,3 +111,11 @@ components:
                 app-version:
                     type: string
                     description: https://schema.org/version
+        Sample:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                value:
+                    type: string

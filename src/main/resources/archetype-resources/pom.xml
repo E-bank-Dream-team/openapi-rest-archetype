@@ -18,6 +18,7 @@
     <openapitools-version>4.3.1</openapitools-version>
     <springfox-version>2.9.2</springfox-version>
     <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
+    <mapstruct-version>1.4.1.Final</mapstruct-version>
   </properties>
 
   <dependencies>
@@ -84,6 +85,18 @@
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger-ui</artifactId>
       <version>${springfox-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>${mapstruct-version}</version>
     </dependency>
 
 #if( $dbType == "postgresql" )
