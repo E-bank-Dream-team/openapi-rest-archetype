@@ -88,7 +88,12 @@
       <artifactId>$dbArtifactId</artifactId>
       <scope>runtime</scope>
     </dependency>
-    
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-contract-verifier</artifactId>
+		<version>${spring-cloud-contract.version}</version>
+		<scope>test</scope>
+	</dependency>
 	<dependency>
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
@@ -145,6 +150,23 @@
           </execution>
         </executions>
       </plugin>
+
+	  <!-- Consumer Driver Contract -->
+	  <plugin>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-contract-maven-plugin</artifactId>
+		<version>${spring-cloud-contract.version}</version>
+		<extensions>true</extensions>
+		<configuration>
+			<contractsDirectory>${project.basedir}/src/test/resources/contracts</contractsDirectory>
+			<!-- Create package name for your auto-generated tests -->
+			<basePackageForTests>${package}.api.autogenerate</basePackageForTests>
+			<!-- If there’s a contract under /${package}/api/<folderName>/*.groovy 
+				then we’ll search for a <folderName>Base.java files -->
+			<packageWithBaseClasses>${package}.api</packageWithBaseClasses>
+		</configuration>
+	  </plugin>
+	  
     </plugins>
   </build>
 
