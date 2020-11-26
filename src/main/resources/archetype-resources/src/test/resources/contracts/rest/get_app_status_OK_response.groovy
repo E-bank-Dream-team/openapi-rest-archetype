@@ -4,7 +4,7 @@ import org.springframework.cloud.contract.spec.Contract
 
 Contract.make {
 	description("""
-		Represents a successful scenario of app status
+		Represents a successful scenario of getting application status
 		
 		```
 		given:
@@ -12,7 +12,7 @@ Contract.make {
 		when:
 			make GET request
 		then:
-			we'll get app-status
+			we'll get app-version
 		```
 		
 		""")

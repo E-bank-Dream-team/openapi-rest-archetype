@@ -17,9 +17,9 @@ public abstract class RestBase {
 	AppController appController;
 	
 	@Before
-    public void setup() {
+	public void setup() {
 		RestAssuredMockMvc.standaloneSetup(
-                MockMvcBuilders.standaloneSetup(appController));
+				MockMvcBuilders.standaloneSetup(appController));
 	}
 	
 }

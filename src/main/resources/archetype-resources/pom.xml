@@ -173,7 +173,7 @@
 			<contractsDirectory>${project.basedir}/src/test/resources/contracts</contractsDirectory>
 			<!-- Create package name for your auto-generated tests -->
 			<basePackageForTests>${package}.api.autogenerate</basePackageForTests>
-			<!-- If there’s a contract under /${package}/api/<folderName>/*.groovy 
+			<!-- If there’s a contract under ${project.basedir}/src/test/resources/contracts/<folderName>/*.groovy 
 				then we’ll search for a <folderName>Base.java files -->
 			<packageWithBaseClasses>${package}.api</packageWithBaseClasses>
 		</configuration>
