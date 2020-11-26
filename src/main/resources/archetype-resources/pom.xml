@@ -16,6 +16,7 @@
     <java.version>11</java.version>
     <mockito.version>3.6.0</mockito.version>
     <openapitools-version>4.3.1</openapitools-version>
+    <springfox-version>2.9.2</springfox-version>
   </properties>
 
   <dependencies>
@@ -70,6 +71,17 @@
       <groupId>org.openapitools</groupId>
       <artifactId>jackson-databind-nullable</artifactId>
       <version>0.2.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>${springfox-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>${springfox-version}</version>
     </dependency>
 
 #if( $dbType == "postgresql" )
