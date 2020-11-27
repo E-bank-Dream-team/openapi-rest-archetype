@@ -166,5 +166,140 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <!-- Profile for running static analysis tools -->
+      <!-- Used by git pre-push hook -->
+      <id>static-analysis</id>
+      <properties>
+        <properties.version>1.0.0</properties.version>
+        <jxr.version>3.0.0</jxr.version>
+        <pmd.version>3.13.0</pmd.version>
+        <spotbugs.version>4.1.4</spotbugs.version>
+        <jacoco.version>0.8.6</jacoco.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- for reading additional properties file -->
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>${properties.version}</version>
+            <executions>
+              <execution>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>read-project-properties</goal>
+                </goals>
+                <configuration>
+                  <files>
+                    <file>src/test/resources/static-analysis/static-analysis.properties</file>
+                  </files>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <!-- dependency of pmd for source references -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jxr-plugin</artifactId>
+            <version>${jxr.version}</version>
+            <executions>
+              <execution>
+                <id>jxr-xref-generation</id>
+                <goals>
+                  <goal>jxr</goal>
+                </goals>
+                <phase>generate-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>${pmd.version}</version>
+            <configuration>
+              <failOnViolation>true</failOnViolation>
+              <printFailingErrors>true</printFailingErrors>
+              <targetJdk>${java.version}</targetJdk>
+              <linkXref>true</linkXref>
+              <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+            <executions>
+              <execution>
+                <id>pmd-analysis</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>test</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>${spotbugs.version}</version>
+            <executions>
+              <execution>
+                <id>spotbugs-report</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>test</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <excludeFilterFile>src/test/resources/static-analysis/spotbugs-exclude.xml</excludeFilterFile>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>jacoco-report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                  <goal>check</goal>
+                </goals>
+                <configuration>
+                  <haltOnFailure>true</haltOnFailure>
+                  <rules>
+                    <rule>
+                      <element>BUNDLE</element>
+                      <limits>
+                        <limit>
+                          <counter>INSTRUCTION</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>${jacoco.instruction.minimum}</minimum>
+                        </limit>
+                      </limits>
+                    </rule>
+                  </rules>
+                  <includes>
+                    <include>${package.replace(".", "/")}/**/*.class</include>
+                  </includes>
+                  <excludes>
+                    <exclude>${package.replace(".", "/")}/${mainSpringClassName}.class</exclude>
+                    <exclude>${package.replace(".", "/")}/generated/**/*.class</exclude>
+                    <exclude>${package.replace(".", "/")}/models/**/*.class</exclude>
+                  </excludes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
