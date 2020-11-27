@@ -37,6 +37,9 @@ http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="${artifactId}"
     <fileSet filtered="true" packaged="false">
       <directory>docker</directory>
     </fileSet>
+    <fileSet filtered="true" packaged = "false">
+      <directory>ci</directory>
+    </fileSet>
   </fileSets>
   <requiredProperties>
     <requiredProperty key="mainSpringClassName">
@@ -45,6 +48,10 @@ http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="${artifactId}"
     <requiredProperty key="dbType">
       <validationRegex>^(postgresql)$</validationRegex>
       <defaultValue>postgresql</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="ci">
+      <validationRegex>^(jenkins|gitlab)$</validationRegex>
+      <defaultValue>jenkins</defaultValue>
     </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
