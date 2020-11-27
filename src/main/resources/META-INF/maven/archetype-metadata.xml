@@ -34,6 +34,9 @@ http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="${artifactId}"
     <fileSet filtered="true" packaged="false">
       <directory>src/test/resources</directory>
     </fileSet>
+    <fileSet filtered="true" packaged="false">
+      <directory>docker</directory>
+    </fileSet>
   </fileSets>
   <requiredProperties>
     <requiredProperty key="mainSpringClassName">
