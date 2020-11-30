@@ -15,10 +15,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
     <mockito.version>3.6.0</mockito.version>
-    <openapitools-version>4.3.1</openapitools-version>
-    <springfox-version>2.9.2</springfox-version>
+    <skip.unit.tests>${skipTests}</skip.unit.tests>
+    <openapitools.version>4.3.1</openapitools.version>
+    <jackson-databind.version>0.2.1</jackson-databind.version>
+    <springfox.version>2.9.2</springfox.version>
     <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
-    <mapstruct-version>1.4.1.Final</mapstruct-version>
+    <mapstruct.version>1.4.1.Final</mapstruct.version>
   </properties>
 
   <dependencies>
@@ -66,37 +68,37 @@
     <dependency>
       <groupId>org.openapitools</groupId>
       <artifactId>openapi-generator</artifactId>
-      <version>${openapitools-version}</version>
+      <version>${openapitools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.openapitools</groupId>
       <artifactId>jackson-databind-nullable</artifactId>
-      <version>0.2.1</version>
+      <version>${jackson-databind.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger2</artifactId>
-      <version>${springfox-version}</version>
+      <version>${springfox.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger-ui</artifactId>
-      <version>${springfox-version}</version>
+      <version>${springfox.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>${mapstruct-version}</version>
+      <version>${mapstruct.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>${mapstruct-version}</version>
+      <version>${mapstruct.version}</version>
     </dependency>
 
 #if( $dbType == "postgresql" )
@@ -146,13 +148,14 @@
         <configuration>
           <!-- To avoid ForkedBooter loading issue -->
           <useSystemClassLoader>false</useSystemClassLoader>
+          <skipTests>${skip.unit.tests}</skipTests>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
-        <version>${openapitools-version}</version>
+        <version>${openapitools.version}</version>
         <executions>
           <execution>
             <goals>
@@ -194,7 +197,6 @@
           <packageWithBaseClasses>${package}.api</packageWithBaseClasses>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 
@@ -225,7 +227,7 @@
     </profile>
     <profile>
       <!-- Profile for running static analysis tools -->
-      <!-- Used by git pre-push hook -->
+      <!-- Used by git pre-push hook and during CI -->
       <id>static-analysis</id>
       <properties>
         <properties.version>1.0.0</properties.version>
@@ -283,6 +285,7 @@
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>
+              <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
             </configuration>
             <executions>
               <execution>

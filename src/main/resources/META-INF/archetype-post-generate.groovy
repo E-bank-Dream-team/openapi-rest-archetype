@@ -4,7 +4,7 @@ import java.nio.file.Paths
 genProjProperties = request.properties
 genProjBasedir = Paths.get(request.outputDirectory, request.artifactId)
 
-void leaveCIScript() {
+void removeUnnecessaryCIScripts() {
     ciType = genProjProperties.get('ci')
     ciDir = genProjBasedir.resolve('ci')
     ciDir.toFile().eachDir { f ->
@@ -16,4 +16,4 @@ void leaveCIScript() {
     }
 }
 
-leaveCIScript()
+removeUnnecessaryCIScripts()

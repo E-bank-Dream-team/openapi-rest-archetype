@@ -1,15 +1,28 @@
 node{
 
-    stage('Checkout code'){
-        git branch: "${BRANCH_NAME}", url: 'https://github.com/lstefaniszyn/e-bank_.git', credentialsId: '6a24fa14-5cfa-4e86-916f-a4d58bd60add'
-    }
+    properties([
+        parameters([
+            string(name: 'GIT_URL',
+                   description: "URL of project's git repository",
+                   defaultValue: ''),
+            credentials(name: 'GIT_CREDENTIALS',
+                        description: 'Credentials for connection to git repository. Must be added to Jenkins instance.',
+                        defaultValue: '',
+                        required: true
+                        credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+        ])
+    ])
 
+    stage('Checkout code'){
+        git branch: "${BRANCH_NAME}", url: "${GIT_URL}", credentialsId: "${GIT_CREDENTIALS}"
+    }
 
     stage('Compile'){
         docker.image('maven:3.6.3-openjdk-11').inside{
             sh 'mvn compile test-compile'
         }
     }
+
     stage('Test'){
         def unitTestsFailed = false
         try {
@@ -20,9 +33,7 @@ node{
             unitTestsFailed = true
         } finally {
             junit 'target/surefire-reports/*.xml'
-            //allure includeProperties: true, jdk: '', report: 'target/site/allure/report/unit', results: [[path: 'target/allure/results/unit']]
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/allure/report/unit', reportFiles: 'index.html', reportName: 'Allure Unit Tests Report', reportTitles: ''])
-            //jacoco classPattern: 'target/classes', exclusionPattern: '**/*Test*.class', execPattern: 'target/jacoco.exec', inclusionPattern: '**/*.class', sourcePattern: 'src/main/java'
         }
         if (unitTestsFailed) {
             error 'Unit tests failed'
@@ -34,16 +45,18 @@ node{
             sh 'mvn -P static-analysis test'
         }
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'pmd.html', reportName: 'PMD Report', reportTitles: ''])
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/pmd', reportFiles: 'pmd.html', reportName: 'PMD Report', reportTitles: ''])
     }
+
     stage('Security scan') {
         echo 'TODO: Security scan'
     }
+
     stage('Integration tests'){
         def itTestsFailed = false
         try {
             docker.image('maven:3.6.3-openjdk-11').inside{
-                sh 'mvn -Dskip.surefire.tests=true verify'
+                sh 'mvn -Dskip.unit.tests=true verify'
             }
         } catch(Exception e) {
             itTestsFailed = true
@@ -51,23 +64,28 @@ node{
             junit 'target/failsafe-reports/*.xml'
             // needs some tweaking on jenkins to combine with unit test report
             //allure includeProperties: false, jdk: '', report: 'target/site/allure/report/it', results: [[path: 'allure/results/unit'], [path: 'allure/results/it']]
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/allure/report/it', reportFiles: 'index.html', reportName: 'Allure Integration Tests Report', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/serenity', reportFiles: 'index.html', reportName: 'Serenity Report', reportTitles: ''])
         }
         if (itTestsFailed) {
             error 'Integration tests failed'
         }
     }
-    docker.image('maven:3.6.3-openjdk-11').inside{
-        stage('Package'){
+
+    stage('Package'){
+        docker.image('maven:3.6.3-openjdk-11').inside{
             sh 'mvn package -DskipTests=true'
         }
     }
+
     stage('Build docker image') {
         def dockerImageId = docker.build('ebank:latest', '-f ./docker/Dockerfile .')
     }
+
     stage('Push docker image') {
         echo 'TODO: Push docker'
     }
+
     stage('Remove docker image') {
         sh "docker image rm -f ${dockerImageId}"
     }
