@@ -2,23 +2,26 @@ package ${package}.integration;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import ${package}.integration.SerenityBase;
+import ${package}.integration.serenity.SerenityBase;
+import ${package}.integration.serenity.steps.SampleSteps;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.annotations.Steps;
 
 public class SampleIT extends SerenityBase {
 
-    private static final String RESOURCE = "/api/v1/samples";
-    @Value("${it.host}")
-    private String host;
-    private final String endpoint = host + RESOURCE;
+    @Autowired
+    @Steps
+    private SampleSteps sample;
 
     @Test
     public void getSampleTest() {
-        SerenityRest.get(endpoint);
-        SerenityRest.restAssuredThat(resp -> resp.statusCode(equalTo(200)));
+        // When
+        sample.sendGet();
+
+        // Then
+        sample.responseStatusOk();
     }
 }

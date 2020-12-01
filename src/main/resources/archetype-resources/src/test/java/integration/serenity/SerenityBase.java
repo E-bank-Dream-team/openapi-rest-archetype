@@ -1,4 +1,4 @@
-package ${package}.integration;
+package ${package}.integration.serenity;
 
 import org.junit.Rule;
 import org.junit.runner.RunWith;
