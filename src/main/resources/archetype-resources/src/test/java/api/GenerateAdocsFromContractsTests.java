@@ -1,3 +1,4 @@
+#set( $hash = '#' )
 package ${package}.api;
 
 import org.junit.Test;
@@ -22,7 +23,6 @@ import java.util.regex.Pattern;
 @RunWith(SpringRunner.class)
 public class GenerateAdocsFromContractsTests {
 	
-	// TODO: Can be parametrized
 	@Value("classpath:contracts")
 	Resource contracts;
 	private static String header = "= Application Contracts\n" + "\n"
@@ -52,7 +52,7 @@ public class GenerateAdocsFromContractsTests {
 				boolean matches = this.pattern.matcher(path.toString())
 						.matches();
 				if (matches) {
-					//appendContract(stringBuilder, path);
+					appendContract(stringBuilder, path);
 				}
 				return FileVisitResult.CONTINUE;
 			}
@@ -77,7 +77,7 @@ public class GenerateAdocsFromContractsTests {
 		File outputDir = new File("target/generated-snippets");
 		outputDir.mkdirs();
 		// TODO: Can be parametrized
-		File outputFile = new File(outputDir, "cfontracts.adoc");
+		File outputFile = new File(outputDir, "contracts.adoc");
 		if (outputFile.exists()) {
 			outputFile.delete();
 		}
@@ -91,6 +91,24 @@ public class GenerateAdocsFromContractsTests {
 		Collection<Contract> contracts = ContractVerifierDslConverter.convertAsCollection(path.getParent()
 				.toFile(), path.toFile());
 		
+		contracts.forEach(contract -> {
+			stringBuilder.append("$hash$hash$hash ")
+					.append(path.getFileName()
+							.toString())
+					.append("\n\n")
+					.append(contract.getDescription())
+					.append("\n\n")
+					.append("$hash$hash$hash$hash Contract structure")
+					.append("\n\n")
+					.append("[source,java,indent=0]")
+					.append("\n")
+					.append("----")
+					.append("\n")
+					.append(fileAsString(path))
+					.append("\n")
+					.append("----")
+					.append("\n\n");
+		});
 		return stringBuilder;
 	}
 	
