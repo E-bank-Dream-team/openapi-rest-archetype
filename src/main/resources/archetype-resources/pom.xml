@@ -528,9 +528,11 @@
                   </includes>
                   <excludes>
                     <exclude>${package.replace(".", "/")}/${mainSpringClassName}.class</exclude>
-                    <exclude>${package.replace(".", "/")}/generated/**/*.class</exclude>
-                    <exclude>${package.replace(".", "/")}/models/**/*.class</exclude>
                     <exclude>${package.replace(".", "/")}/configuration/**/*.class</exclude>
+                    <exclude>${package.replace(".", "/")}/generated/**/*.class</exclude>
+                    <exclude>${package.replace(".", "/")}/mappers/**/*.class</exclude>
+                    <exclude>${package.replace(".", "/")}/models/**/*.class</exclude>
+                    <exclude>${package.replace(".", "/")}/logger/**/*.class</exclude>
                   </excludes>
                 </configuration>
               </execution>

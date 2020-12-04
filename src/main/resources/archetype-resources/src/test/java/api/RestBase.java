@@ -8,7 +8,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -31,10 +30,10 @@ public abstract class RestBase {
 
 	@InjectMocks
 	SampleController sampleController;
-	
+
 	@InjectMocks
 	AppController appController;
-	
+
 	@Before
 	public void setup() {
 		given(sampleService.getOne(1L)).willReturn(getSample(1L));
@@ -58,5 +57,5 @@ public abstract class RestBase {
 		sample.setValue(String.format("sampleValue%d", id));
 		return sample;
 	}
-	
+
 }
