@@ -1,7 +1,5 @@
 package ${package}.integration;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import ${package}.integration.serenity.SerenityBase;
 import ${package}.integration.serenity.steps.SampleSteps;
 
