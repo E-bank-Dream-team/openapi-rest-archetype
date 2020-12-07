@@ -28,6 +28,7 @@
     <rest-assured.version>4.3.1</rest-assured.version>
     <!-- Groovy version needs to be explicitly specified -->
     <groovy.version>3.0.3</groovy.version>
+    <archunit.version>0.14.1</archunit.version>
   </properties>
 
   <dependencies>
@@ -224,6 +225,13 @@
       <artifactId>xml-path</artifactId>
       <version>${rest-assured.version}</version>
     </dependency>
+
+    <!-- To test Architecture -->
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <version>${archunit.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -247,6 +255,7 @@
           <systemPropertyVariables>
             <allure.results.directory>target/allure/results/unit</allure.results.directory>
           </systemPropertyVariables>
+          <excludedGroups>arch</excludedGroups>
         </configuration>
       </plugin>
 
@@ -448,6 +457,19 @@
                 <phase>generate-sources</phase>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+            <configuration>
+              <!-- To avoid ForkedBooter loading issue -->
+              <useSystemClassLoader>false</useSystemClassLoader>
+              <skipTests>${skip.unit.tests}</skipTests>
+              <systemPropertyVariables>
+                <allure.results.directory>target/allure/results/unit</allure.results.directory>
+              </systemPropertyVariables>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
