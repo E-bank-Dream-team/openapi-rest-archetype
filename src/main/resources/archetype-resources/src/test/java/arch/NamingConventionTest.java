@@ -4,15 +4,14 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTag;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.junit.jupiter.api.Tag;
-
-@Tag("arch")
+@ArchTag("arch")
 @AnalyzeClasses(packages = "${package}", importOptions = { ImportOption.DoNotIncludeTests.class, ImportOption.DoNotIncludeJars.class, ImportOption.DoNotIncludeArchives.class })
 public class NamingConventionTest {
 

@@ -4,13 +4,12 @@ import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTag;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import static com.tngtech.archunit.library.freeze.FreezingArchRule.freeze;
 
-import org.junit.jupiter.api.Tag;
-
-@Tag("arch")
+@ArchTag("arch")
 @AnalyzeClasses(packages = "${package}", importOptions = { ImportOption.DoNotIncludeTests.class, ImportOption.DoNotIncludeJars.class, ImportOption.DoNotIncludeArchives.class })
 public class LayeredArchitectureTest {
 

@@ -14,7 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
-    <skip.unit.tests>${skipTests}</skip.unit.tests>
+    <unit.test.skip>${skipTests}</unit.test.skip>
     <!-- Dependencies versions -->
     <mockito.version>3.6.0</mockito.version>
     <openapitools.version>4.3.1</openapitools.version>
@@ -251,10 +251,11 @@
         <configuration>
           <!-- To avoid ForkedBooter loading issue -->
           <useSystemClassLoader>false</useSystemClassLoader>
-          <skipTests>${skip.unit.tests}</skipTests>
+          <skipTests>${unit.test.skip}</skipTests>
           <systemPropertyVariables>
             <allure.results.directory>target/allure/results/unit</allure.results.directory>
           </systemPropertyVariables>
+          <excludedGroups>arch</excludedGroups>
         </configuration>
       </plugin>
 
@@ -462,22 +463,8 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.0.0-M5</version>
             <configuration>
-              <!-- To avoid ForkedBooter loading issue -->
-              <useSystemClassLoader>false</useSystemClassLoader>
-              <skipTests>${skip.unit.tests}</skipTests>
-              <systemPropertyVariables>
-                <allure.results.directory>target/allure/results/unit</allure.results.directory>
-              </systemPropertyVariables>
-              <includes>
-                <!-- defaults of Surefire
-                  taken from https://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html -->
-                <include>**/Test*.java</include>
-                <include>**/*Test.java</include>
-                <include>**/*Tests.java</include>
-                <include>**/*TestCase.java</include>
-                <!-- include also architecture tests -->
-                <include>com/example/arch/*.java</include>
-              </includes>
+              <!-- don't exclude any group of tests -->
+              <excludedGroups combine.self="override"/>
             </configuration>
           </plugin>
           <plugin>
