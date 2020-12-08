@@ -1,7 +1,6 @@
 package ${package}.arch;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Tag;
 
 @Tag("arch")
 @AnalyzeClasses(packages = "${package}", importOptions = { ImportOption.DoNotIncludeTests.class, ImportOption.DoNotIncludeJars.class, ImportOption.DoNotIncludeArchives.class })
-public class NamingConvention {
+public class NamingConventionTest {
 
     @ArchTest
     static ArchRule classes_named_controller_should_be_in_a_controller_package = classes()
