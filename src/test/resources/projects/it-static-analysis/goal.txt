@@ -1,1 +1,1 @@
--P mock -P static-analysis test
+-P static-analysis test
