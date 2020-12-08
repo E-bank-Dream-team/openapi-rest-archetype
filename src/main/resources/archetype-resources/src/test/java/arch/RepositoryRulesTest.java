@@ -1,6 +1,6 @@
 package ${package}.arch;
 
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -19,7 +19,8 @@ public class RepositoryRulesTest {
             .that()
             .resideInAPackage("..repositories..")
             .should()
-            .dependOnClassesThat(resideInAPackage("..org.springframework.data.repository.."))
+            .dependOnClassesThat(resideInAnyPackage("..org.springframework.data.repository..",
+                                                    "..org.springframework.data.jpa.repository.."))
             .because("Repository has to extend interface from org.springframework.data.repository.* ");
 
     @ArchTest
