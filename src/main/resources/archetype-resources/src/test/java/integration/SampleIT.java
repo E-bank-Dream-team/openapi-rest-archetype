@@ -4,22 +4,24 @@ import ${package}.integration.serenity.SerenityBase;
 import ${package}.integration.serenity.steps.SampleSteps;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import net.thucydides.core.annotations.Steps;
 
 public class SampleIT extends SerenityBase {
 
-    @Autowired
     @Steps
-    private SampleSteps sample;
+    private SampleSteps sampleSteps;
+
+    @Value("${it.host}")
+    private String host;
 
     @Test
     public void getSampleTest() {
         // When
-        sample.sendGet();
+        sampleSteps.sendGet(host);
 
         // Then
-        sample.responseStatusOk();
+        sampleSteps.responseStatusOk();
     }
 }
