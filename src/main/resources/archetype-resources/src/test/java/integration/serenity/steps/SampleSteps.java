@@ -2,23 +2,16 @@ package ${package}.integration.serenity.steps;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import ${package}.integration.serenity.endpoints.SampleEndpoint;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
 
-@Component
 public class SampleSteps {
 
-    @Autowired
-    private SampleEndpoint endpoint;
+    private static final String RESOURCE = "/api/v1/samples";
 
     @Step("Send a GET request")
-    public void sendGet() {
-        SerenityRest.get(endpoint.getEndpoint());
+    public void sendGet(String host) {
+        SerenityRest.get(host + RESOURCE);
     }
 
     @Step("Response status code should be 200")
