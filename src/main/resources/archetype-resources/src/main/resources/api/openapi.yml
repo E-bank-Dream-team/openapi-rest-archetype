@@ -94,10 +94,15 @@ paths:
                                 $ref: "#/components/schemas/Sample"
                 "400":
                     $ref: '#/components/responses/IvalidSampleId'
+                "401":
+                    $ref: '#/components/responses/UnauthorizedError'
                 "404":
                     $ref: '#/components/responses/SampleNotFound'
 components:
     responses:
+        UnauthorizedError:
+            description: Access token is missing or invalid
+            content: { }
         SampleNotFound:
             description: Sample not found for given ID
             content: {}

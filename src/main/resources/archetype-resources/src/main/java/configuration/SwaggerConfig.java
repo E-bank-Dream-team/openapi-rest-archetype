@@ -7,7 +7,12 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 @Configuration
 public class SwaggerConfig {
@@ -28,7 +33,24 @@ public class SwaggerConfig {
 				.build()
 				.directModelSubstitute(org.threeten.bp.LocalDate.class, java.sql.Date.class)
 				.directModelSubstitute(org.threeten.bp.OffsetDateTime.class, java.util.Date.class)
-				.apiInfo(apiInfo());
+				.apiInfo(apiInfo())
+				.securityContexts(singletonList(securityContext()))
+				.securitySchemes(singletonList(apiKey()));
+	}
+
+	private SecurityContext securityContext() {
+		return SecurityContext.builder().securityReferences(defaultAuth()).build();
+	}
+
+	private List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return singletonList(new SecurityReference("JWT", authorizationScopes));
+	}
+
+	private ApiKey apiKey() {
+		return new ApiKey("JWT", "Authorization", "header");
 	}
 
 }
