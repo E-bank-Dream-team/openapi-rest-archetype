@@ -363,6 +363,24 @@
           </execution>
         </executions>
       </plugin>
+
+	<!-- Documentation from contracts generator plugin -->
+	<plugin>
+		<groupId>com.example</groupId>
+		<artifactId>contract-docs-generator-maven-plugin</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<executions>
+			<execution>
+				<goals>
+					<goal>contract-docs-generator</goal>
+				</goals>
+			</execution>
+		</executions>
+		<configuration>
+			<outputDirPath>target/generated-snippets</outputDirPath>
+			<outputFileName>contracts.adoc</outputFileName>
+		</configuration>
+	</plugin>
     </plugins>
   </build>
 
@@ -560,4 +578,17 @@
       </build>
     </profile>
   </profiles>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/e-bank-dream-team/contract-docs-generator-plugin</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
