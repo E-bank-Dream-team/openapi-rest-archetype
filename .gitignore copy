@@ -6,6 +6,8 @@ target/
 **/src/main/resources/credentials.json
 allure-results/
 logs/
+demo.txt
+dependencytree.txt
 
 
 
@@ -37,3 +39,4 @@ build/
 ### VS Code ###
 .vscode/
 .allure/
+
