@@ -29,6 +29,7 @@
     <!-- Groovy version needs to be explicitly specified -->
     <groovy.version>3.0.3</groovy.version>
     <archunit.version>0.14.1</archunit.version>
+    <jsonwebtoken-version>0.11.2</jsonwebtoken-version>
   </properties>
 
   <dependencies>
@@ -65,6 +66,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
     <dependency>
@@ -118,6 +124,24 @@
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
       <version>${mapstruct.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>${jsonwebtoken-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>${jsonwebtoken-version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>${jsonwebtoken-version}</version>
+      <scope>runtime</scope>
     </dependency>
 
 #if( $dbType == "postgresql" )
@@ -322,6 +346,7 @@
         <version>${allure-maven.version}</version>
         <configuration>
           <reportVersion>${allure-maven.version}</reportVersion>
+          <installDirectory>${user.home}/.allure</installDirectory>
         </configuration>
         <executions>
           <execution>
