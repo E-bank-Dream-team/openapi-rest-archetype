@@ -40,6 +40,9 @@ http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="${artifactId}"
     <fileSet filtered="true" packaged = "false">
       <directory>ci</directory>
     </fileSet>
+    <fileSet filtered="false" packaged="false">
+      <directory>resources</directory>
+    </fileSet>
     <fileSet filtered="true" packaged = "false">
       <directory/>
       <includes>
