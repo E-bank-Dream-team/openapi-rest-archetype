@@ -21,6 +21,7 @@
     <jackson-databind.version>0.2.1</jackson-databind.version>
     <springfox.version>2.9.2</springfox.version>
     <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
+    <spring-cloud-openfeign.version>2.2.6.RELEASE</spring-cloud-openfeign.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
     <allure.version>2.13.7</allure.version>
     <allure-maven.version>2.10.0</allure-maven.version>
@@ -171,6 +172,20 @@
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
       <version>${spring-cloud-contract.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>rest-date-time</artifactId>
+      <classifier>stubs</classifier>
+      <version>0.1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>${spring-cloud-openfeign.version}</version>
     </dependency>
 
     <!-- Test reports -->
@@ -389,23 +404,23 @@
         </executions>
       </plugin>
 
-	<!-- Documentation from contracts generator plugin -->
-	<plugin>
-		<groupId>com.example</groupId>
-		<artifactId>contract-docs-generator-maven-plugin</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<executions>
-			<execution>
-				<goals>
-					<goal>contract-docs-generator</goal>
-				</goals>
-			</execution>
-		</executions>
-		<configuration>
-			<outputDirPath>target/generated-snippets</outputDirPath>
-			<outputFileName>contracts.adoc</outputFileName>
-		</configuration>
-	</plugin>
+  <!-- Documentation from contracts generator plugin -->
+  <plugin>
+    <groupId>com.example</groupId>
+    <artifactId>contract-docs-generator-maven-plugin</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <executions>
+      <execution>
+        <goals>
+          <goal>contract-docs-generator</goal>
+        </goals>
+      </execution>
+    </executions>
+    <configuration>
+      <outputDirPath>target/generated-snippets</outputDirPath>
+      <outputFileName>contracts.adoc</outputFileName>
+    </configuration>
+  </plugin>
     </plugins>
   </build>
 
@@ -604,16 +619,22 @@
     </profile>
   </profiles>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/e-bank-dream-team/contract-docs-generator-plugin</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/rest-date-time</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/contract-docs-generator-plugin</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
