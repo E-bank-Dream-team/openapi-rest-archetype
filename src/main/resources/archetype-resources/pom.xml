@@ -537,7 +537,7 @@
         </executions>
         <configuration>
           <systemPropertyVariables>
-            <spring.profiles.active>local,it-local, mock</spring.profiles.active>
+            <spring.profiles.active>local,it,mock</spring.profiles.active>
             <allure.results.directory>target/allure/results/it</allure.results.directory>
           </systemPropertyVariables>
         </configuration>
@@ -660,7 +660,7 @@
       <properties>
         <flyway.version>6.5.7</flyway.version>
         <h2.version>1.4.200</h2.version>
-        <spring.profiles.active>local,it-local,mock</spring.profiles.active>
+        <spring.profiles.active>local,it,mock</spring.profiles.active>
       </properties>
       <dependencies>
         <dependency>
