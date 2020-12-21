@@ -12,17 +12,11 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
-		// "java.home": "/docker-java-home",
-		// "java.import.gradle.java.home": "/usr/local/sdkman/candidates/java/current",
-		// "java.configuration.runtimes": [{
-		// 	"default": true,
-		// 	"name": "JavaSE-1.8",
-		// 	"path": "/usr/local/sdkman/candidates/java/current"
-		// }]
 	},
 	
 	"mounts": [
-		"source=${env:HOMEDRIVE}${env:HOMEPATH}\\.m2\\repository,target=/root/.m2/repository,type=bind,consistency=cached"
+		//mount users local maven conf and repo to docker maven. This reduces application build time.
+		"source=${env:HOMEDRIVE}${env:HOMEPATH}\\.m2,target=/root/.m2,type=bind,consistency=cached"
 	],
 
 

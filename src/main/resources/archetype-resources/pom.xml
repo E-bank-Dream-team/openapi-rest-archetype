@@ -14,22 +14,39 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
-    <unit.test.skip>${skipTests}</unit.test.skip>
+
+
     <!-- Dependencies versions -->
-    <mockito.version>3.6.0</mockito.version>
+
+    <!-- PRE-COMPILE -->
     <openapitools.version>4.3.1</openapitools.version>
+
+    <!-- COMPILE -->
     <jackson-databind.version>0.2.1</jackson-databind.version>
+    <mapstruct.version>1.4.1.Final</mapstruct.version>
+
+    <!-- TESTS -->
+    <unit.test.skip>${skipTests}</unit.test.skip>
+    <mockito.version>3.6.0</mockito.version>
     <springfox.version>2.9.2</springfox.version>
     <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
-    <mapstruct.version>1.4.1.Final</mapstruct.version>
     <allure.version>2.13.7</allure.version>
     <allure-maven.version>2.10.0</allure-maven.version>
     <serenity.version>2.3.6</serenity.version>
     <rest-assured.version>4.3.1</rest-assured.version>
     <!-- Groovy version needs to be explicitly specified -->
     <groovy.version>3.0.3</groovy.version>
-    <archunit.version>0.14.1</archunit.version>
     <jsonwebtoken-version>0.11.2</jsonwebtoken-version>
+    <archunit.version>0.14.1</archunit.version>
+
+    <!-- STATIC ANALYZE -->
+    <properties.version>1.0.0</properties.version>
+    <jxr.version>3.0.0</jxr.version>
+    <pmd.version>3.13.0</pmd.version>
+    <spotbugs.version>4.1.4</spotbugs.version>
+    <jacoco.version>0.8.6</jacoco.version>
+
+
   </properties>
 
   <dependencies>
@@ -143,8 +160,7 @@
       <version>${jsonwebtoken-version}</version>
       <scope>runtime</scope>
     </dependency>
-
-#if( $dbType == "postgresql" )
+    #if( $dbType == "postgresql" )
 #set( $dbGroupId = "org.postgresql" )
 #set( $dbArtifactId = "postgresql" )
 ## uncomment to add more databases
@@ -260,45 +276,31 @@
 
   <build>
     <plugins>
+
+      <!-- CLEAN -->
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.0.0</version>
         <configuration>
-          <jvmArguments>${argLine}</jvmArguments>
+          <filesets>
+            <fileset>
+              <directory>logs</directory>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M5</version>
-        <configuration>
-          <!-- To avoid ForkedBooter loading issue -->
-          <useSystemClassLoader>false</useSystemClassLoader>
-          <skipTests>${unit.test.skip}</skipTests>
-          <systemPropertyVariables>
-            <allure.results.directory>target/allure/results/unit</allure.results.directory>
-          </systemPropertyVariables>
-          <excludedGroups>arch</excludedGroups>
-        </configuration>
-      </plugin>
 
+      <!-- PRE-COMPILE -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <allure.results.directory>target/allure/results/it</allure.results.directory>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <plugin>
+        <!-- Code autogenerator from openapi.yml file -->
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>${openapitools.version}</version>
         <executions>
           <execution>
+            <phase>generate-sources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -323,12 +325,152 @@
         </executions>
       </plugin>
 
+
+      <!-- STATIC ANALYZE -->
+      <plugin>
+        <!-- for reading additional properties file -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>${properties.version}</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>src/test/resources/static-analysis/static-analysis.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- dependency of pmd for source references -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.version}</version>
+        <executions>
+          <execution>
+            <id>jxr-xref-generation</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>jxr</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${pmd.version}</version>
+        <configuration>
+          <failOnViolation>true</failOnViolation>
+          <printFailingErrors>true</printFailingErrors>
+          <targetJdk>${java.version}</targetJdk>
+          <linkXref>true</linkXref>
+          <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+          <excludeRoots>
+            <excludeRoot>target/generated-sources</excludeRoot>
+          </excludeRoots>
+          <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>pmd-analysis</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs.version}</version>
+        <executions>
+          <execution>
+            <id>spotbugs-report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeFilterFile>src/test/resources/static-analysis/spotbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-java-code-coverage-analyze</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <append>true</append>
+              <!-- <destFile>${sonar.jacoco.reportPath}</destFile> -->
+              <!-- Sets the VM argument line used when unit tests are run. -->
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>jacoco-report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <haltOnFailure>true</haltOnFailure>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.instruction.minimum}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+              <includes>
+                <include>${package.replace(".", "/")}/**/*.class</include>
+              </includes>
+              <excludes>
+                <exclude>${package.replace(".", "/")}/${mainSpringClassName}.class</exclude>
+                <exclude>${package.replace(".", "/")}/configuration/**/*.class</exclude>
+                <exclude>${package.replace(".", "/")}/autogenerated/**/*.class</exclude>
+                <exclude>${package.replace(".", "/")}/mappers/**/*.class</exclude>
+                <exclude>${package.replace(".", "/")}/models/**/*.class</exclude>
+                <exclude>${package.replace(".", "/")}/logger/**/*.class</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <!-- TEST-COMPILE-->
       <!-- Consumer Driver Contract -->
       <plugin>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-contract-maven-plugin</artifactId>
         <version>${spring-cloud-contract.version}</version>
         <extensions>true</extensions>
+        <executions>
+          <execution>
+            <phase>generate-test-sources</phase>
+          </execution>
+        </executions>
         <configuration>
           <contractsDirectory>${project.basedir}/src/test/resources/contracts</contractsDirectory>
           <!-- Create package name for your auto-generated tests -->
@@ -339,6 +481,53 @@
         </configuration>
       </plugin>
 
+      <!-- RUN JUNIT TESTS -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M5</version>
+        <configuration>
+          <!-- To avoid ForkedBooter loading issue -->
+          <forkCount>3</forkCount>
+          <reuseForks>true</reuseForks>
+          <argLine>${surefireArgLine} -Xmx1024m -noverify</argLine>
+          <systemPropertyVariables>
+            <allure.results.directory>target/allure/results/unit</allure.results.directory>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+
+      <!-- PACKAGE-->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <jvmArguments>${argLine}</jvmArguments>
+        </configuration>
+      </plugin>
+
+      <!-- INTEGRATION TEST -->
+      <!-- Run tests-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <systemPropertyVariables>
+            <spring.profiles.active>local,it-local</spring.profiles.active>
+            <allure.results.directory>target/allure/results/it</allure.results.directory>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <!-- Test reporting plugins -->
       <plugin>
         <groupId>io.qameta.allure</groupId>
@@ -373,7 +562,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>net.serenity-bdd.maven.plugins</groupId>
         <artifactId>serenity-maven-plugin</artifactId>
@@ -389,49 +577,69 @@
         </executions>
       </plugin>
 
-	<!-- Documentation from contracts generator plugin -->
-	<plugin>
-		<groupId>com.example</groupId>
-		<artifactId>contract-docs-generator-maven-plugin</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<executions>
-			<execution>
-				<goals>
-					<goal>contract-docs-generator</goal>
-				</goals>
-			</execution>
-		</executions>
-		<configuration>
-			<outputDirPath>target/generated-snippets</outputDirPath>
-			<outputFileName>contracts.adoc</outputFileName>
-		</configuration>
-	</plugin>
+      <!-- SITE  - generate docs-->
+      <!-- Documentation from contracts generator plugin -->
+      <plugin>
+        <groupId>com.example</groupId>
+        <artifactId>contract-docs-generator-maven-plugin</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>site</phase>
+            <goals>
+              <goal>contract-docs-generator</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirPath>target/site/api-doc-contract</outputDirPath>
+          <outputFileName>contracts.adoc</outputFileName>
+        </configuration>
+      </plugin>
+
+      <!-- Generate report for maven site goal -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.7.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+
     </plugins>
   </build>
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+    <plugins>
+      <!-- Report project information -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.1.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>index</report>
+              <report>mailing-lists</report>
+              <report>plugin-management</report>
+              <report>plugins</report>
+              <report>team</report>
+              <report>scm</report>
+              <report>summary</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <profiles>
     <profile>
-      <id>local</id>
-      <properties>
-        <spring.profiles.active>local</spring.profiles.active>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <!-- Append integration test Spring profile -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <configuration>
-              <systemPropertyVariables>
-                <spring.profiles.active>local,it-local</spring.profiles.active>
-              </systemPropertyVariables>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>mock</id>
+      <id>dev</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -454,166 +662,19 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
-      <!-- Profile for running static analysis tools -->
-      <!-- Used by git pre-push hook and during CI -->
-      <id>static-analysis</id>
-      <properties>
-        <properties.version>1.0.0</properties.version>
-        <jxr.version>3.0.0</jxr.version>
-        <pmd.version>3.13.0</pmd.version>
-        <spotbugs.version>4.1.4</spotbugs.version>
-        <jacoco.version>0.8.6</jacoco.version>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <!-- for reading additional properties file -->
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>${properties.version}</version>
-            <executions>
-              <execution>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>read-project-properties</goal>
-                </goals>
-                <configuration>
-                  <files>
-                    <file>src/test/resources/static-analysis/static-analysis.properties</file>
-                  </files>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <!-- dependency of pmd for source references -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jxr-plugin</artifactId>
-            <version>${jxr.version}</version>
-            <executions>
-              <execution>
-                <id>jxr-xref-generation</id>
-                <goals>
-                  <goal>jxr</goal>
-                </goals>
-                <phase>generate-sources</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M5</version>
-            <configuration>
-              <!-- don't exclude any group of tests -->
-              <excludedGroups combine.self="override"/>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-pmd-plugin</artifactId>
-            <version>${pmd.version}</version>
-            <configuration>
-              <failOnViolation>true</failOnViolation>
-              <printFailingErrors>true</printFailingErrors>
-              <targetJdk>${java.version}</targetJdk>
-              <linkXref>true</linkXref>
-              <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-              <excludeRoots>
-                <excludeRoot>target/generated-sources</excludeRoot>
-              </excludeRoots>
-              <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
-            </configuration>
-            <executions>
-              <execution>
-                <id>pmd-analysis</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>test</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>${spotbugs.version}</version>
-            <executions>
-              <execution>
-                <id>spotbugs-report</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>test</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <excludeFilterFile>src/test/resources/static-analysis/spotbugs-exclude.xml</excludeFilterFile>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco.version}</version>
-            <executions>
-              <execution>
-                <id>default-prepare-agent</id>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>jacoco-report</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>report</goal>
-                  <goal>check</goal>
-                </goals>
-                <configuration>
-                  <haltOnFailure>true</haltOnFailure>
-                  <rules>
-                    <rule>
-                      <element>BUNDLE</element>
-                      <limits>
-                        <limit>
-                          <counter>INSTRUCTION</counter>
-                          <value>COVEREDRATIO</value>
-                          <minimum>${jacoco.instruction.minimum}</minimum>
-                        </limit>
-                      </limits>
-                    </rule>
-                  </rules>
-                  <includes>
-                    <include>${package.replace(".", "/")}/**/*.class</include>
-                  </includes>
-                  <excludes>
-                    <exclude>${package.replace(".", "/")}/${mainSpringClassName}.class</exclude>
-                    <exclude>${package.replace(".", "/")}/configuration/**/*.class</exclude>
-                    <exclude>${package.replace(".", "/")}/autogenerated/**/*.class</exclude>
-                    <exclude>${package.replace(".", "/")}/mappers/**/*.class</exclude>
-                    <exclude>${package.replace(".", "/")}/models/**/*.class</exclude>
-                    <exclude>${package.replace(".", "/")}/logger/**/*.class</exclude>
-                  </excludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/e-bank-dream-team/contract-docs-generator-plugin</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/contract-docs-generator-plugin</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>

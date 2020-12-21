@@ -2,6 +2,7 @@ package ${package}.integration;
 
 import ${package}.integration.serenity.SerenityBase;
 import ${package}.integration.serenity.steps.SampleSteps;
+import ${package}.logger.AppLogger;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,8 @@ public class SampleIT extends SerenityBase {
     @Test
     public void getSampleTest() {
         // When
+        AppLogger.info("!!!  Host:" + host);
+
         sampleSteps.sendGet(host);
 
         // Then
