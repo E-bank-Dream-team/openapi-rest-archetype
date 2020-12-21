@@ -15,7 +15,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
 
-
     <!-- Dependencies versions -->
 
     <!-- PRE-COMPILE -->
@@ -24,6 +23,7 @@
     <!-- COMPILE -->
     <jackson-databind.version>0.2.1</jackson-databind.version>
     <mapstruct.version>1.4.1.Final</mapstruct.version>
+    <spring-cloud-openfeign.version>2.2.6.RELEASE</spring-cloud-openfeign.version>
 
     <!-- TESTS -->
     <unit.test.skip>${skipTests}</unit.test.skip>
@@ -537,7 +537,7 @@
         </executions>
         <configuration>
           <systemPropertyVariables>
-            <spring.profiles.active>local,it-local</spring.profiles.active>
+            <spring.profiles.active>local,it-local, mock</spring.profiles.active>
             <allure.results.directory>target/allure/results/it</allure.results.directory>
           </systemPropertyVariables>
         </configuration>
@@ -653,7 +653,7 @@
 
   <profiles>
     <profile>
-      <id>dev</id>
+      <id>local</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>

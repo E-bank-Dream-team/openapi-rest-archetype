@@ -1,1 +1,1 @@
--P static-analysis test
+ test
