@@ -124,3 +124,10 @@ components:
                     format: int64
                 value:
                     type: string
+        # Generate DTO for external rest-date-time service
+        RestDateTimeServiceResponse:
+            type: object
+            properties:
+                date-time:
+                    type: string
+                    format: date-time

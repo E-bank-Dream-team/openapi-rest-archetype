@@ -189,6 +189,20 @@
       <version>${spring-cloud-contract.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>rest-date-time</artifactId>
+      <classifier>stubs</classifier>
+      <version>0.1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>${spring-cloud-openfeign.version}</version>
+    </dependency>
+
     <!-- Test reports -->
     <!-- Allure -->
     <dependency>
@@ -664,6 +678,12 @@
     </profile>
   </profiles>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/rest-date-time</url>
+    </repository>
+  </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>github</id>
@@ -676,5 +696,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
 </project>
