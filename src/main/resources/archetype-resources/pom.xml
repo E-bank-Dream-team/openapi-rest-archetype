@@ -202,6 +202,12 @@
       <version>${spring-cloud-openfeign.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>app-logger</artifactId>
+      <version>1.0</version>
+    </dependency>
+
     <!-- Test reports -->
     <!-- Allure -->
     <dependency>
@@ -754,7 +760,7 @@
   <repositories>
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/e-bank-dream-team/rest-date-time</url>
+      <url>https://maven.pkg.github.com/e-bank-dream-team</url>
     </repository>
   </repositories>
   <pluginRepositories>

@@ -2,8 +2,8 @@ package ${package}.integration;
 
 import ${package}.integration.serenity.SerenityBase;
 import ${package}.integration.serenity.steps.SampleSteps;
-import ${package}.logger.AppLogger;
 
+import com.example.logger.AppLogger;
 import org.junit.Test;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.beans.factory.annotation.Value;
