@@ -42,6 +42,7 @@ node{
 
     stage('Static analysis') {
         docker.image('maven:3.6.3-openjdk-11').inside{
+            sh 'mvn properties:read-project-properties@read-properties jacoco:prepare-agent@jacaco-prepare-agent surefire:test@unit-tests jacoco:report@jacoco-report jacoco:check@jacoco-check'
             sh 'mvn -P static-analysis test'
         }
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
