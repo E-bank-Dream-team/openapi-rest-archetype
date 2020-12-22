@@ -34,7 +34,7 @@ public class RestDateTimeServiceContractIT {
 
         assertThat(response).isNotNull();
         // Date specified in contract of rest-date-time
-        assertThat(response.getDateTime()).isEqualTo("2020-12-12T10:00:00.000");
+        assertThat(response.getDateTime()).isEqualTo("2020-12-12T10:00:00+00:00");
     }
 
 }
