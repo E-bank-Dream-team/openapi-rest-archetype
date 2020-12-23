@@ -380,17 +380,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>${pmd.version}</version>
-        <configuration>
-          <failOnViolation>true</failOnViolation>
-          <printFailingErrors>true</printFailingErrors>
-          <targetJdk>${java.version}</targetJdk>
-          <linkXref>true</linkXref>
-          <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-          <excludeRoots>
-            <excludeRoot>target/generated-sources</excludeRoot>
-          </excludeRoots>
-          <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
-        </configuration>
         <executions>
           <execution>
             <id>pmd-analysis</id>
@@ -398,6 +387,17 @@
             <goals>
               <goal>check</goal>
             </goals>
+            <configuration>
+              <failOnViolation>true</failOnViolation>
+              <printFailingErrors>true</printFailingErrors>
+              <targetJdk>${java.version}</targetJdk>
+              <linkXref>true</linkXref>
+              <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+              <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -407,7 +407,7 @@
         <version>${spotbugs.version}</version>
         <executions>
           <execution>
-            <id>spotbugs-report</id>
+            <id>spotbugs-check</id>
             <phase>test</phase>
             <goals>
               <goal>check</goal>
@@ -637,7 +637,35 @@
   <reporting>
     <excludeDefaults>true</excludeDefaults>
     <plugins>
-      <!-- Report project information -->
+
+      <!-- Jacaco report -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+      </plugin>
+      <!-- PMD CopyPasteDetection report -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${pmd.version}</version>
+        <configuration>
+          <outputDirectory>${project.reporting.outputDirectory}/pmd</outputDirectory>
+        </configuration>
+      </plugin>
+      <!-- Report spotbugs -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs.version}</version>
+        <configuration>
+          <outputDirectory>${project.reporting.outputDirectory}/spotbugs</outputDirectory>
+          <xmlOutput>true</xmlOutput>
+          <!-- Optional directory to put spotbugs xdoc xml report -->
+          <xmlOutputDirectory>${project.reporting.outputDirectory}/spotbugs</xmlOutputDirectory>
+        </configuration>
+      </plugin>
+      <!-- Report generic project information -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
