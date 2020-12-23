@@ -41,11 +41,24 @@ node{
     }
 
     stage('Static analysis') {
-        docker.image('maven:3.6.3-openjdk-11').inside{
-            sh 'mvn -P static-analysis test'
+        try {
+            docker.image('maven:3.6.3-openjdk-11').inside{
+                sh 'mvn properties:read-project-properties@read-properties jacoco:prepare-agent@jacaco-prepare-agent surefire:test@unit-tests jacoco:report@jacoco-report jacoco:check@jacoco-check'
+                sh 'mvn properties:read-project-properties@read-properties spotbugs:check@spotbugs-check'
+                sh 'mvn properties:read-project-properties@read-properties jxr:jxr@jxr-xref-generation pmd:check@pmd-analysis'
+                }
+        } catch(Exception e) {
+            error("ERROR: " + e)
+        } finally {
+            docker.image('maven:3.6.3-openjdk-11').inside{
+                sh 'mvn site:site'
+                }
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'spotbugs.html', reportName: 'Spot bugs', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'spotbugs.html', reportName: 'Spot bugs', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'pmd.html', reportName: 'PMD Report', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'cpd.html', reportName: 'CopyPaste Report', reportTitles: ''])
         }
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/pmd', reportFiles: 'pmd.html', reportName: 'PMD Report', reportTitles: ''])
     }
 
     stage('Security scan') {

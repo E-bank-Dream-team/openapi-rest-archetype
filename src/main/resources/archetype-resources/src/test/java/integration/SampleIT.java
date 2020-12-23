@@ -5,6 +5,7 @@ import ${package}.integration.serenity.steps.SampleSteps;
 import ${package}.logger.AppLogger;
 
 import org.junit.Test;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.beans.factory.annotation.Value;
 
 import net.thucydides.core.annotations.Steps;
@@ -17,12 +18,16 @@ public class SampleIT extends SerenityBase {
     @Value("${it.host}")
     private String host;
 
+    @LocalServerPort
+    private int serverPort;
+
     @Test
     public void getSampleTest() {
         // When
         AppLogger.info("!!!  Host:" + host);
+        AppLogger.info("!!!  Port:" + serverPort);
 
-        sampleSteps.sendGet(host);
+        sampleSteps.sendGet(host + ":" + serverPort);
 
         // Then
         sampleSteps.responseStatusOk();
