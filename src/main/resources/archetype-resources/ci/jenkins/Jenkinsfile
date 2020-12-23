@@ -45,7 +45,7 @@ node{
             docker.image('maven:3.6.3-openjdk-11').inside{
                 sh 'mvn properties:read-project-properties@read-properties jacoco:prepare-agent@jacaco-prepare-agent surefire:test@unit-tests jacoco:report@jacoco-report jacoco:check@jacoco-check'
                 sh 'mvn properties:read-project-properties@read-properties spotbugs:check@spotbugs-check'
-                sh 'mvn properties:read-project-properties@read-properties jxr:jxr@jxr-xref-generation pmd:check@pmd-analysis'
+                sh 'mvn properties:read-project-properties@read-properties jxr:jxr@jxr-xref-generation pmd:check@pmd-analysis pmd:cpd-check@pmd-analysis'
                 }
         } catch(Exception e) {
             error("ERROR: " + e)
