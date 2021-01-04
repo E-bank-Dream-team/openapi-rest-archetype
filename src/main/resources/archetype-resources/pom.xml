@@ -26,7 +26,6 @@
     <spring-cloud-openfeign.version>2.2.6.RELEASE</spring-cloud-openfeign.version>
 
     <!-- TESTS -->
-    <unit.test.skip>${skipTests}</unit.test.skip>
     <mockito.version>3.6.0</mockito.version>
     <springfox.version>2.9.2</springfox.version>
     <spring-cloud-contract.version>2.2.5.RELEASE</spring-cloud-contract.version>
@@ -428,6 +427,18 @@
               <goal>check</goal>
             </goals>
           </execution>
+          <execution>
+            <id>spotbug-report</id>
+            <goals>
+              <goal>spotbugs</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.reporting.outputDirectory}/spotbugs</outputDirectory>
+              <xmlOutput>false</xmlOutput>
+              <!-- Optional directory to put spotbugs xdoc xml report -->
+              <xmlOutputDirectory>${project.reporting.outputDirectory}/spotbugs</xmlOutputDirectory>
+            </configuration>
+          </execution>
         </executions>
         <configuration>
           <excludeFilterFile>src/test/resources/static-analysis/spotbugs-exclude.xml</excludeFilterFile>
@@ -535,16 +546,6 @@
         </executions>
       </plugin>
 
-
-      <!-- PACKAGE-->
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <jvmArguments>${argLine}</jvmArguments>
-        </configuration>
-      </plugin>
-
       <!-- INTEGRATION TEST -->
       <!-- Run tests-->
       <plugin>
@@ -615,6 +616,20 @@
         </executions>
       </plugin>
 
+      <!-- PACKAGE-->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>spring-package</id>
+          </execution>
+        </executions>
+        <configuration>
+          <jvmArguments>${argLine}</jvmArguments>
+        </configuration>
+      </plugin>
+
       <!-- SITE  - generate docs-->
       <!-- Documentation from contracts generator plugin -->
       <plugin>
@@ -649,6 +664,7 @@
 
     </plugins>
   </build>
+  
   <reporting>
     <excludeDefaults>true</excludeDefaults>
     <plugins>
@@ -680,6 +696,25 @@
           <xmlOutputDirectory>${project.reporting.outputDirectory}/spotbugs</xmlOutputDirectory>
         </configuration>
       </plugin>
+
+      <!-- Allure report for unit and integration tests-->
+      <plugin>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-maven</artifactId>
+        <version>${allure-maven.version}</version>
+        <configuration>
+          <resultsDirectory>allure/results</resultsDirectory>
+          <reportDirectory>${project.reporting.outputDirectory}/allure/report</reportDirectory>
+        </configuration>
+      </plugin>
+
+      <!-- Serenity report for integration tests-->
+      <plugin>
+        <groupId>net.serenity-bdd.maven.plugins</groupId>
+        <artifactId>serenity-maven-plugin</artifactId>
+        <version>${serenity.version}</version>
+      </plugin>
+
       <!-- Report generic project information -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

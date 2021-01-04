@@ -27,13 +27,17 @@ node{
         def unitTestsFailed = false
         try {
             docker.image('maven:3.6.3-openjdk-11').inside{
-                sh 'mvn test'
+                sh 'mvn properties:read-project-properties@read-properties jacoco:prepare-agent@jacaco-prepare-agent surefire:test@unit-tests'
+                sh 'mvn properties:read-project-properties@read-properties jacoco:check@jacoco-check'
             }
         } catch(Exception e) {
             unitTestsFailed = true
         } finally {
             junit 'target/surefire-reports/*.xml'
+            sh 'mvn allure:report@allure-unit-report'
+            sh 'mvn jacoco:report@jacoco-report'
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/allure/report/unit', reportFiles: 'index.html', reportName: 'Allure Unit Tests Report', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
         }
         if (unitTestsFailed) {
             error 'Unit tests failed'
@@ -43,19 +47,17 @@ node{
     stage('Static analysis') {
         try {
             docker.image('maven:3.6.3-openjdk-11').inside{
-                sh 'mvn properties:read-project-properties@read-properties jacoco:prepare-agent@jacaco-prepare-agent surefire:test@unit-tests jacoco:report@jacoco-report jacoco:check@jacoco-check'
+                sh 'mvn jxr:jxr@jxr-xref-generation'
                 sh 'mvn properties:read-project-properties@read-properties spotbugs:check@spotbugs-check'
-                sh 'mvn properties:read-project-properties@read-properties jxr:jxr@jxr-xref-generation pmd:check@pmd-analysis pmd:cpd-check@pmd-analysis'
+                sh 'mvn properties:read-project-properties@read-properties pmd:check@pmd-analysis pmd:cpd-check@pmd-analysis'
                 }
         } catch(Exception e) {
             error("ERROR: " + e)
         } finally {
             docker.image('maven:3.6.3-openjdk-11').inside{
-                sh 'mvn site:site'
+                'mvn properties:read-project-properties@read-properties spotbugs:spotbugs@spotbug-report'
                 }
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'spotbugs.html', reportName: 'Spot bugs', reportTitles: ''])
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'spotbugs.html', reportName: 'Spot bugs', reportTitles: ''])
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Coverage Report', reportTitles: ''])
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'spotbugs.html', reportName: 'Spot bugs', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'pmd.html', reportName: 'PMD Report', reportTitles: ''])
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site', reportFiles: 'cpd.html', reportName: 'CopyPaste Report', reportTitles: ''])
         }
@@ -69,12 +71,14 @@ node{
         def itTestsFailed = false
         try {
             docker.image('maven:3.6.3-openjdk-11').inside{
-                sh 'mvn -Dskip.unit.tests=true verify'
+                sh 'mvn failsafe:integration-test@integration-tests'
             }
         } catch(Exception e) {
             itTestsFailed = true
         } finally {
             junit 'target/failsafe-reports/*.xml'
+            sh 'mvn serenity:aggregate'
+            sh 'mvn allure:report@allure-it-report'
             // needs some tweaking on jenkins to combine with unit test report
             //allure includeProperties: false, jdk: '', report: 'target/site/allure/report/it', results: [[path: 'allure/results/unit'], [path: 'allure/results/it']]
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'target/site/allure/report/it', reportFiles: 'index.html', reportName: 'Allure Integration Tests Report', reportTitles: ''])
@@ -87,7 +91,7 @@ node{
 
     stage('Package'){
         docker.image('maven:3.6.3-openjdk-11').inside{
-            sh 'mvn package -DskipTests=true'
+            sh 'mvn jar:jar spring-boot:repackage@spring-package'
         }
     }
 
