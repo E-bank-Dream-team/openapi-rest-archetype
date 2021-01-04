@@ -10,7 +10,6 @@ import java.util.Properties;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.Topology;
@@ -38,10 +37,8 @@ public class KafkaStreamProcessorTests {
 	public void test() {
 		
 		Topology topology = topologyFactory.getTransactionsTopology();
+		Properties props = topologyFactory.getConfig();
 		
-		Properties props = new Properties();
-		props.put(StreamsConfig.APPLICATION_ID_CONFIG, "test");
-		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
 		testDriver = new TopologyTestDriver(topology, props);
 		
 		TestInputTopic<String, String> inputTopic = testDriver.createInputTopic(
@@ -51,27 +48,6 @@ public class KafkaStreamProcessorTests {
 		assertThat(outputTopic.isEmpty(), is(true));
 		
 		inputTopic.pipeInput("1", "1");
-		assertThat(outputTopic.isEmpty(), is(false));
-		assertThat(outputTopic.readValue(), equalTo(new ArrayList<>()));
-	}
-	
-	@Test
-	public void test2() {
-		
-		Topology topology = topologyFactory.getTransactionsTopology();
-		
-		Properties props = new Properties();
-		props.put(StreamsConfig.APPLICATION_ID_CONFIG, "test");
-		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
-		testDriver = new TopologyTestDriver(topology, props);
-		
-		TestInputTopic<String, String> inputTopic = testDriver.createInputTopic(
-				INPUT_TOPIC, new StringSerializer(), new StringSerializer());
-		TestOutputTopic<String, List<Sample>> outputTopic = testDriver.createOutputTopic(
-				OUTPUT_TOPIC, new StringDeserializer(), new JsonDeserializer<List<Sample>>());
-		assertThat(outputTopic.isEmpty(), is(true));
-		
-		inputTopic.pipeInput("2", "2");
 		assertThat(outputTopic.isEmpty(), is(false));
 		assertThat(outputTopic.readValue(), equalTo(new ArrayList<>()));
 	}
