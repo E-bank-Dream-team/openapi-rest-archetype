@@ -33,7 +33,7 @@ public class CodingRulesTest {
     @ArchTest
     private final ArchRule no_log4j_logging = noClasses()
             .that()
-            .resideOutsideOfPackage("${package}.logger..")
+            .resideOutsideOfPackage("com.example.logger..")
             .should(USE_LOG4J)
             .because("AppLogger should be used instead of Log4J logger");
 
