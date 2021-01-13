@@ -159,7 +159,8 @@
       <version>${jsonwebtoken-version}</version>
       <scope>runtime</scope>
     </dependency>
-    #if( $dbType == "postgresql" )
+
+#if( $dbType == "postgresql" )
 #set( $dbGroupId = "org.postgresql" )
 #set( $dbArtifactId = "postgresql" )
 ## uncomment to add more databases
