@@ -760,8 +760,12 @@
 
   <repositories>
     <repository>
-      <id>github</id>
-      <url>https://maven.pkg.github.com/e-bank-dream-team</url>
+      <id>github-rest-date-time</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/rest-date-time</url>
+    </repository>
+    <repository>
+      <id>github-app-logger</id>
+      <url>https://maven.pkg.github.com/e-bank-dream-team/app-logger</url>
     </repository>
   </repositories>
   <pluginRepositories>

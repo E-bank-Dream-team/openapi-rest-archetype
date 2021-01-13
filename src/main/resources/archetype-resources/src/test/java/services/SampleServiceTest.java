@@ -11,6 +11,8 @@ import java.util.stream.LongStream;
 
 import javax.persistence.EntityNotFoundException;
 
+import ${package}.mappers.SampleMapper;
+import ${package}.mappers.SampleMapperImpl;
 import ${package}.models.Sample;
 import ${package}.repositories.SampleRepository;
 
@@ -18,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,6 +31,9 @@ public class SampleServiceTest {
 
     @InjectMocks
     SampleService sampleService;
+
+    @Spy
+    SampleMapper sampleMapper = new SampleMapperImpl();
 
     private static List<Sample> samplesGenerator(int size) {
         return LongStream.rangeClosed(1L, (long)size).mapToObj((l) -> {
@@ -43,7 +49,7 @@ public class SampleServiceTest {
         List<Sample> samples = samplesGenerator(5);
         when(sampleRepository.findAll()).thenReturn(samples);
 
-        assertThat(sampleService.getAll(), equalTo(samples));
+        assertThat(sampleService.getAll(), equalTo(sampleMapper.toListDto(samples)));
     }
 
     @Test
@@ -52,7 +58,7 @@ public class SampleServiceTest {
         sample.setId(1L);
         when(sampleRepository.findById(1L)).thenReturn(Optional.of(sample));
 
-        assertThat(sampleService.getOne(1L), equalTo(sample));
+        assertThat(sampleService.getOne(1L), equalTo(sampleMapper.toDto(sample)));
     }
 
     @Test(expected = EntityNotFoundException.class)
